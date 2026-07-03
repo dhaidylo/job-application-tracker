@@ -33,6 +33,6 @@
         /// <summary>
         /// Navigation property for the job applications submitted by the user.
         /// </summary>
-        public ICollection<JobApplication> JobApplications { get; set; } = [];
+        public ICollection<JobApplication> JobApplications { get; } = [];
     }
 }

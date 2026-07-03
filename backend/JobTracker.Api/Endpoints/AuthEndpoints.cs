@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JobTracker.Api.Endpoints
 {
+    /// <summary>
+    /// Provides endpoints for user authentication.
+    /// </summary>
     public static class AuthEndpoints
     {
         /// <summary>
@@ -15,10 +18,18 @@ namespace JobTracker.Api.Endpoints
         /// <param name="app">The web application.</param>
         public static void MapAuthEndpoints(this WebApplication app)
         {
-            var group = app.MapGroup("/api/auth").WithTags("Authentication");
+            var group = app.MapGroup("/api/auth")
+                .WithTags("Authentication");
 
-            group.MapPost("/register", Register);
-            group.MapPost("/login", Login);
+            group.MapPost("/register", Register)
+            .WithName("Register")
+            .Produces<AuthResponse>(StatusCodes.Status201Created)
+            .Produces(StatusCodes.Status409Conflict);
+
+            group.MapPost("/login", Login)
+            .WithName("Login")
+            .Produces<AuthResponse>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized);
         }
 
         /// <summary>
