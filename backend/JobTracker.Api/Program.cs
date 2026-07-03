@@ -52,6 +52,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapAuthEndpoints();
+app.MapJobApplicationEndpoints();
 
 app.MapGet("/api/check", () => Results.Ok(new {status = "ok" }));
 

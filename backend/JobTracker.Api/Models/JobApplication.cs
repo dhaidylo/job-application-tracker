@@ -68,6 +68,6 @@
         /// <summary>
         /// Navigation property to the user who owns this job application.
         /// </summary>
-        public required User User { get; set; }
+        public User User { get; set; } = null!;
     }
 }
