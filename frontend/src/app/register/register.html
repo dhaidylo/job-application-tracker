@@ -1,0 +1,73 @@
+<div class="register-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Create account</mat-card-title>
+      <mat-card-subtitle>Start tracking your job applications</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form (ngSubmit)="onSubmit()">
+
+        <div class="name-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Full name</mat-label>
+            <input
+              matInput
+              type="text"
+              [(ngModel)]="fullName"
+              name="fullName"
+              required
+              autocomplete="name"
+            />
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            type="email"
+            [(ngModel)]="email"
+            name="email"
+            required
+            autocomplete="email"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            type="password"
+            [(ngModel)]="password"
+            name="password"
+            required
+            autocomplete="new-password"
+          />
+        </mat-form-field>
+
+        @if (errorMessage) {
+          <p class="error-message">{{ errorMessage }}</p>
+        }
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="isLoading || !fullName || !email || !password"
+        >
+          @if (isLoading) {
+            <mat-spinner diameter="20" />
+          } @else {
+            Create account
+          }
+        </button>
+
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <p>Already have an account? <a routerLink="/login">Sign in</a></p>
+    </mat-card-actions>
+  </mat-card>
+</div>
