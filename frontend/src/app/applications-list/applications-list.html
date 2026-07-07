@@ -1,0 +1,100 @@
+<div class="page-container">
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <h1>My Applications</h1>
+    <div class="toolbar-actions">
+      <button mat-raised-button color="primary" (click)="onAdd()">
+        <mat-icon>add</mat-icon>
+        Add Application
+      </button>
+      <button mat-icon-button (click)="onLogout()" matTooltip="Logout">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  @if (isLoading) {
+    <div class="center">
+      <mat-spinner />
+    </div>
+  }
+
+  <!-- Error state -->
+  @if (errorMessage) {
+    <p class="error-message">{{ errorMessage }}</p>
+  }
+
+  <!-- Empty state -->
+  @if (!isLoading && applications.length === 0) {
+    <div class="empty-state">
+      <mat-icon>work_off</mat-icon>
+      <p>No applications yet. Add your first one!</p>
+      <button mat-raised-button color="primary" (click)="onAdd()">
+        Add Application
+      </button>
+    </div>
+  }
+
+  <!-- Table -->
+  @if (!isLoading && applications.length > 0) {
+    <mat-table [dataSource]="applications">
+
+      <ng-container matColumnDef="companyName">
+        <mat-header-cell *matHeaderCellDef>Company</mat-header-cell>
+        <mat-cell *matCellDef="let app">{{ app.companyName }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="position">
+        <mat-header-cell *matHeaderCellDef>Position</mat-header-cell>
+        <mat-cell *matCellDef="let app">{{ app.position }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+        <mat-cell *matCellDef="let app">
+          <mat-chip [color]="getStatusColor(app.status)" highlighted>
+            {{ app.status }}
+          </mat-chip>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="source">
+        <mat-header-cell *matHeaderCellDef>Source</mat-header-cell>
+        <mat-cell *matCellDef="let app">{{ app.source }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="appliedDate">
+        <mat-header-cell *matHeaderCellDef>Applied</mat-header-cell>
+        <mat-cell *matCellDef="let app">
+          {{ app.appliedDate | date:'mediumDate' }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let app">
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="onEdit(app.id)">
+              <mat-icon>edit</mat-icon>
+              Edit
+            </button>
+            <button mat-menu-item (click)="onDelete(app.id)">
+              <mat-icon>delete</mat-icon>
+              Delete
+            </button>
+          </mat-menu>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns" />
+      <mat-row *matRowDef="let row; columns: displayedColumns;" />
+
+    </mat-table>
+  }
+
+</div>
