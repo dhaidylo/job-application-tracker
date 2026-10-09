@@ -33,6 +33,12 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<TokenService>();
 
+// Configure JSON serialization options to handle enum values as strings.
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+});
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
