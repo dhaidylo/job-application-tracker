@@ -1,0 +1,97 @@
+<div class="form-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ pageTitle }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+
+      @if (isLoading()) {
+        <div class="center">
+          <mat-spinner />
+        </div>
+      } @else {
+        <form (ngSubmit)="onSubmit()">
+
+          <!-- Company + Position -->
+          <div class="row">
+            <mat-form-field appearance="outline">
+              <mat-label>Company name</mat-label>
+              <input matInput [(ngModel)]="companyName" name="companyName" required />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Position</mat-label>
+              <input matInput [(ngModel)]="position" name="position" required />
+            </mat-form-field>
+          </div>
+
+          <!-- Location -->
+          <mat-form-field appearance="outline">
+            <mat-label>Location</mat-label>
+            <input matInput [(ngModel)]="location" name="location" placeholder="e.g. Berlin, Remote" />
+          </mat-form-field>
+
+          <!-- Status + Source -->
+          <div class="row">
+            <mat-form-field appearance="outline">
+              <mat-label>Status</mat-label>
+              <mat-select [(ngModel)]="status" name="status">
+                @for (s of statuses; track s) {
+                  <mat-option [value]="s">{{ s }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Source</mat-label>
+              <mat-select [(ngModel)]="source" name="source">
+                @for (s of sources; track s) {
+                  <mat-option [value]="s">{{ s }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Applied date -->
+          <mat-form-field appearance="outline">
+            <mat-label>Applied date</mat-label>
+            <input matInput [matDatepicker]="picker" [(ngModel)]="appliedDate" name="appliedDate" required />
+            <mat-datepicker-toggle matIconSuffix [for]="picker" />
+            <mat-datepicker #picker />
+          </mat-form-field>
+
+          <!-- Job posting URL -->
+          <mat-form-field appearance="outline">
+            <mat-label>Job posting URL</mat-label>
+            <input matInput [(ngModel)]="jobPostingUrl" name="jobPostingUrl" type="url" placeholder="https://..." />
+          </mat-form-field>
+
+          <!-- Notes -->
+          <mat-form-field appearance="outline">
+            <mat-label>Notes</mat-label>
+            <textarea matInput [(ngModel)]="notes" name="notes" rows="4" placeholder="Interview prep, impressions, follow-up reminders..."></textarea>
+          </mat-form-field>
+
+          @if (errorMessage(); as error) {
+            <p class="error-message">{{ error }}</p>
+          }
+
+          <!-- Actions -->
+          <div class="form-actions">
+            <button mat-button type="button" (click)="onCancel()">Cancel</button>
+            <button mat-flat-button type="submit" [disabled]="isSaving() || !companyName || !position">
+              @if (isSaving()) {
+                <mat-spinner diameter="20" />
+              } @else {
+                {{ pageTitle }}
+              }
+            </button>
+          </div>
+
+        </form>
+      }
+
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -2,15 +2,14 @@ import { Routes } from '@angular/router';
 import { Login } from './login/login';
 import { Register } from './register/register';
 import { ApplicationsList } from './applications-list/applications-list';
+import { ApplicationForm } from './application-form/application-form';
 import { authGuard } from './auth-guard';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'register', component: Register },
-  {
-    path: 'applications',
-    component: ApplicationsList,
-    canActivate: [authGuard]
-  },
+  { path: 'applications', component: ApplicationsList, canActivate: [authGuard] },
+  { path: 'applications/new', component: ApplicationForm, canActivate: [authGuard] },
+  { path: 'applications/:id/edit', component: ApplicationForm, canActivate: [authGuard] },
   { path: '', redirectTo: 'login', pathMatch: 'full' }
 ];
