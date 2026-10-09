@@ -22,11 +22,11 @@ export interface JobApplication {
     location: string;
     status: ApplicationStatus;
     appliedDate: string;
-    jobPostingUrl: string;
-    notes: string;
+    jobPostingUrl?: string | null;
+    notes?: string | null;
     source: ApplicationSource;
     createdAt: string;
-    updatedAt: string;
+    updatedAt?: string;
 }
 
 export type ApplicationStatus =
@@ -47,3 +47,8 @@ export type ApplicationSource =
 | 'CompanyWebsite'
 | 'CarreerFair'
 | 'Other';
+
+export interface JobApplicationsResponse {
+    jobApplications: JobApplication[];
+    totalCount: number;
+}

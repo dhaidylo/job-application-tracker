@@ -47,7 +47,7 @@ export class ApplicationsList implements OnInit {
     this.isLoading.set(true);
     this.applicationsService.getAll().subscribe({
       next: (data) => {
-        this.applications = data;
+        this.applications.set(data.jobApplications);
         this.errorMessage.set(null);
         this.isLoading.set(false);
       },

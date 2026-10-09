@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { JobApplication } from './models';
+import { JobApplication, JobApplicationsResponse } from './models';
 import { environment } from '../environments/environment';
 
 @Injectable({
@@ -12,7 +12,7 @@ export class ApplicationsService {
   constructor(private http: HttpClient) {}
 
   getAll() {
-    return this.http.get<JobApplication[]>(this.apiUrl);
+    return this.http.get<JobApplicationsResponse>(this.apiUrl);
   }
 
   getById(id: string) {
