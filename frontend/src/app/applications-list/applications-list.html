@@ -54,9 +54,9 @@
       <ng-container matColumnDef="status">
         <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
         <mat-cell *matCellDef="let app">
-          <mat-chip [color]="getStatusColor(app.status)" highlighted>
+          <span class="status-badge" [class]="getStatusClass(app.status)">
             {{ app.status }}
-          </mat-chip>
+          </span>
         </mat-cell>
       </ng-container>
 

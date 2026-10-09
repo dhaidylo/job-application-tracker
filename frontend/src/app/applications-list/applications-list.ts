@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { DatePipe } from '@angular/common';
 import { ApplicationsService } from '../applications.service';
 import { AuthService } from '../auth.service';
@@ -20,6 +21,7 @@ import { JobApplication, ApplicationStatus } from '../models';
     MatChipsModule,
     MatProgressSpinnerModule,
     MatMenuModule,
+    MatTooltipModule,
     DatePipe
   ],
   templateUrl: './applications-list.html',
@@ -58,15 +60,15 @@ export class ApplicationsList implements OnInit {
     });
   }
 
-  // Returns a Material color for each status chip
-  getStatusColor(status: ApplicationStatus): string {
-    const colors: Record<ApplicationStatus, string> = {
-      Applied: 'primary',
-      Interviewing: 'accent',
-      Offered: 'primary',
-      Rejected: 'warn',
+  // Map of status to CSS class for styling
+  getStatusClass(status: ApplicationStatus): string {
+    const statusClasses: Record<ApplicationStatus, string> = {
+      Applied: 'status-applied',
+      Interviewing: 'status-interviewing',
+      Offered: 'status-offered',
+      Rejected: 'status-rejected',
     };
-    return colors[status];
+    return statusClasses[status];
   }
 
   onAdd() {
