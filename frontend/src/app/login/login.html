@@ -33,17 +33,17 @@
         </mat-form-field>
 
         <!-- Error message from the API -->
-        @if (errorMessage) {
-          <p class="error-message">{{ errorMessage }}</p>
+        @if (errorMessage(); as error) {
+          <p class="error-message">{{ error }}</p>
         }
 
         <button
           mat-raised-button
           color="primary"
           type="submit"
-          [disabled]="isLoading || !email || !password"
+          [disabled]="isLoading() || !email || !password"
         >
-          @if (isLoading) {
+          @if (isLoading()) {
             <mat-spinner diameter="20" />
           } @else {
             Sign in

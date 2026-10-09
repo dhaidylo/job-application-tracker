@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,9 +26,9 @@ import { JobApplication, ApplicationStatus } from '../models';
   styleUrl: './applications-list.scss'
 })
 export class ApplicationsList implements OnInit {
-  applications: JobApplication[] = [];
-  isLoading = true;
-  errorMessage = '';
+  applications = signal<JobApplication[]>([]);
+  isLoading = signal(true);
+  errorMessage = signal<string | null>(null);
 
   // Columns to display in the table
   displayedColumns = ['companyName', 'position', 'status', 'source', 'appliedDate', 'actions'];
@@ -44,15 +44,16 @@ export class ApplicationsList implements OnInit {
   }
 
   loadApplications() {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.applicationsService.getAll().subscribe({
       next: (data) => {
         this.applications = data;
-        this.isLoading = false;
+        this.errorMessage.set(null);
+        this.isLoading.set(false);
       },
       error: () => {
-        this.errorMessage = 'Failed to load applications.';
-        this.isLoading = false;
+        this.errorMessage.set('Failed to load applications.');
+        this.isLoading.set(false);
       }
     });
   }
@@ -81,10 +82,12 @@ export class ApplicationsList implements OnInit {
 
     this.applicationsService.delete(id).subscribe({
       next: () => {
-        this.applications = this.applications.filter(a => a.id !== id);
+        this.applications.update(applications =>
+          applications.filter(a => a.id !== id)
+        );
       },
       error: () => {
-        this.errorMessage = 'Failed to delete application.';
+        this.errorMessage.set('Failed to delete application.');
       }
     });
   }

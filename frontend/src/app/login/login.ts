@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -25,25 +25,25 @@ import { AuthService } from '../auth.service';
 export class Login {
   email = '';
   password = '';
-  isLoading = false;
-  errorMessage = '';
+  isLoading = signal(false);
+  errorMessage = signal('');
 
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
-    this.isLoading = true;
-    this.errorMessage = '';
+    this.isLoading.set(true);
+    this.errorMessage.set('');
 
     this.authService.login({ email: this.email, password: this.password }).subscribe({
       next: () => {
         this.router.navigate(['/applications']);
-      },
+      },  
       error: (err) => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         // Show a generic message — don't tell the user which field is wrong
-        this.errorMessage = err.status === 401
+        this.errorMessage.set(err.status === 401
           ? 'Invalid email or password.'
-          : 'Something went wrong. Please try again.';
+          : 'Something went wrong. Please try again.');
       }
     });
   }

@@ -15,19 +15,19 @@
   </div>
 
   <!-- Loading state -->
-  @if (isLoading) {
+  @if (isLoading()) {
     <div class="center">
       <mat-spinner />
     </div>
   }
 
   <!-- Error state -->
-  @if (errorMessage) {
-    <p class="error-message">{{ errorMessage }}</p>
+  @if (errorMessage(); as error) {
+    <p class="error-message">{{ error }}</p>
   }
 
   <!-- Empty state -->
-  @if (!isLoading && applications.length === 0) {
+  @if (!isLoading() && applications().length === 0) {
     <div class="empty-state">
       <mat-icon>work_off</mat-icon>
       <p>No applications yet. Add your first one!</p>
@@ -38,8 +38,8 @@
   }
 
   <!-- Table -->
-  @if (!isLoading && applications.length > 0) {
-    <mat-table [dataSource]="applications">
+  @if (!isLoading() && applications().length > 0) {
+    <mat-table [dataSource]="applications()">
 
       <ng-container matColumnDef="companyName">
         <mat-header-cell *matHeaderCellDef>Company</mat-header-cell>
