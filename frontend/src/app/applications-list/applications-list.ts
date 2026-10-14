@@ -7,10 +7,12 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
 import { ApplicationsService } from '../applications.service';
 import { AuthService } from '../auth.service';
-import { JobApplication, ApplicationStatus } from '../models';
+import { JobApplication, ApplicationStatus, UpdateStatusRequest } from '../models';
+import { StatusChangeDialog } from '../status-change-dialog/status-change-dialog';
 
 @Component({
   selector: 'app-applications-list',
@@ -38,7 +40,8 @@ export class ApplicationsList implements OnInit {
   constructor(
     private applicationsService: ApplicationsService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -69,6 +72,32 @@ export class ApplicationsList implements OnInit {
       Rejected: 'status-rejected',
     };
     return statusClasses[status];
+  }
+
+  onStatusClick(app: JobApplication) {
+    const dialogRef = this.dialog.open(StatusChangeDialog, {
+      data: { currentStatus: app.status }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) return;
+
+      const request: UpdateStatusRequest = {
+        newStatus: result.newStatus,
+        note: result.note
+      };
+
+      this.applicationsService.updateStatus(app.id, request).subscribe({
+        next: () => {
+          this.applications.update(apps =>
+            apps.map(a => a.id === app.id ? { ...a, status: result.newStatus } : a)
+          );
+        },
+        error: () => {
+          this.errorMessage.set('Failed to update status.');
+        }
+      });
+    });
   }
 
   onAdd() {

@@ -22,6 +22,11 @@ namespace JobTracker.Api.Data
         /// </summary>
         public DbSet<JobApplication> JobApplications => Set<JobApplication>();
 
+        /// <summary>
+        /// Records of status changes for job applications.
+        /// </summary>
+        public DbSet<ApplicationStatusChange> ApplicationStatusChanges => Set<ApplicationStatusChange>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Register C# enums as native PostgreSQL enums.
@@ -40,6 +45,16 @@ namespace JobTracker.Api.Data
                 .WithMany(u => u.JobApplications)
                 .HasForeignKey(ja => ja.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ApplicationStatusChange>(entity =>
+            {
+                // One job application has many status changes.
+                // Deleting a job application will cascade delete its status changes.
+                entity.HasOne<JobApplication>()
+                      .WithMany(ja => ja.StatusChanges)
+                      .HasForeignKey(asc => asc.JobApplicationId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }

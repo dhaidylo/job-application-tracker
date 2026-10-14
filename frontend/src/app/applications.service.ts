@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { JobApplication, JobApplicationsResponse } from './models';
+import { JobApplication, JobApplicationsResponse, UpdateStatusRequest, StatusChange } from './models';
 import { environment } from '../environments/environment';
 
 @Injectable({
@@ -29,5 +29,13 @@ export class ApplicationsService {
 
   delete(id: string) {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  updateStatus(id: string, request: UpdateStatusRequest) {
+    return this.http.put(`${this.apiUrl}/${id}/status`, request);
+  }
+
+  getStatusChanges(id: string) {
+    return this.http.get<StatusChange[]>(`${this.apiUrl}/${id}/status-changes`);
   }
 }

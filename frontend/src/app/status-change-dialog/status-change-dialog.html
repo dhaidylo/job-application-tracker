@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>Change Status</h2>
+
+<mat-dialog-content>
+  <div class="dialog-form">
+    <mat-form-field appearance="outline">
+      <mat-label>New Status</mat-label>
+      <mat-select [(ngModel)]="newStatus" name="status">
+        @for (s of statuses; track s) {
+          <mat-option [value]="s">{{ s }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Note (optional)</mat-label>
+      <textarea
+        matInput
+        [(ngModel)]="note"
+        name="note"
+        rows="3"
+        placeholder="e.g. Rejected after technical round"
+      ></textarea>
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-flat-button (click)="onSave()" [disabled]="newStatus === data.currentStatus">
+    Save
+  </button>
+</mat-dialog-actions>

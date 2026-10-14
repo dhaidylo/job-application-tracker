@@ -25,6 +25,34 @@ namespace JobTracker.Api.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "application_status", new[] { "applied", "interviewing", "offered", "rejected" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("JobTracker.Api.Models.ApplicationStatusChange", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("JobApplicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<ApplicationStatus>("NewStatus")
+                        .HasColumnType("application_status");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<ApplicationStatus>("OldStatus")
+                        .HasColumnType("application_status");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobApplicationId");
+
+                    b.ToTable("ApplicationStatusChanges");
+                });
+
             modelBuilder.Entity("JobTracker.Api.Models.JobApplication", b =>
                 {
                     b.Property<Guid>("Id")
@@ -103,6 +131,15 @@ namespace JobTracker.Api.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("JobTracker.Api.Models.ApplicationStatusChange", b =>
+                {
+                    b.HasOne("JobTracker.Api.Models.JobApplication", null)
+                        .WithMany("StatusChanges")
+                        .HasForeignKey("JobApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("JobTracker.Api.Models.JobApplication", b =>
                 {
                     b.HasOne("JobTracker.Api.Models.User", "User")
@@ -112,6 +149,11 @@ namespace JobTracker.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("JobTracker.Api.Models.JobApplication", b =>
+                {
+                    b.Navigation("StatusChanges");
                 });
 
             modelBuilder.Entity("JobTracker.Api.Models.User", b =>

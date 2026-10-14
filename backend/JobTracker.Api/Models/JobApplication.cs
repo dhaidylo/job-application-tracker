@@ -69,5 +69,10 @@
         /// Navigation property to the user who owns this job application.
         /// </summary>
         public User User { get; set; } = null!;
+
+        /// <summary>
+        /// Full history of status changes for this job application.
+        /// </summary>
+        public ICollection<ApplicationStatusChange> StatusChanges { get; set; } = [];
     }
 }

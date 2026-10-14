@@ -52,3 +52,16 @@ export interface JobApplicationsResponse {
     jobApplications: JobApplication[];
     totalCount: number;
 }
+
+export interface StatusChange {
+  id: string;
+  oldStatus: ApplicationStatus;
+  newStatus: ApplicationStatus;
+  changedAt: string;
+  note?: string;
+}
+
+export interface UpdateStatusRequest {
+  newStatus: ApplicationStatus;
+  note?: string;
+}

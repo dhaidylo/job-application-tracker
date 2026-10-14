@@ -33,19 +33,32 @@ namespace JobTracker.Api.Endpoints
             group.MapPost("/", Create)
                 .Accepts<CreateJobApplicationRequest>("application/json")
                 .Produces<JobApplicationResponse>(StatusCodes.Status201Created)
-                .Produces(StatusCodes.Status400BadRequest)
                 .Produces(StatusCodes.Status401Unauthorized);
 
             group.MapPut("/{Id:guid}", Update)
                 .Accepts<UpdateJobApplicationRequest>("application/json")
                 .Produces<JobApplicationResponse>(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status400BadRequest)
                 .Produces(StatusCodes.Status401Unauthorized)
+                .Produces(StatusCodes.Status403Forbidden)
                 .Produces(StatusCodes.Status404NotFound);
 
             group.MapDelete("/{Id:guid}", Delete)
                 .Produces(StatusCodes.Status204NoContent)
                 .Produces(StatusCodes.Status401Unauthorized)
+                .Produces(StatusCodes.Status403Forbidden)
+                .Produces(StatusCodes.Status404NotFound);
+
+            group.MapPut("/{id}/status", UpdateStatus)
+                .Accepts<UpdateStatusRequest>("application/json")
+                .Produces(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces(StatusCodes.Status403Forbidden)
+                .Produces(StatusCodes.Status404NotFound);
+
+            group.MapGet("/{id}/status-changes", GetStatusChanges)
+                .Produces<List<StatusChangeResponse>>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces(StatusCodes.Status403Forbidden)
                 .Produces(StatusCodes.Status404NotFound);
         }
 
@@ -54,7 +67,7 @@ namespace JobTracker.Api.Endpoints
         /// </summary>
         /// <param name="db">The database context.</param>
         /// <param name="user">The authenticated user.</param>
-        /// <returns>The result of the operation.</returns>
+        /// <returns></returns>
         private static async Task<IResult> GetAll(AppDbContext db, ClaimsPrincipal user)
         {
             var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -89,7 +102,7 @@ namespace JobTracker.Api.Endpoints
         /// <param name="Id">The ID of the job application to retrieve.</param>
         /// <param name="db">The database context.</param>
         /// <param name="user">The authenticated user.</param>
-        /// <returns>The result of the operation.</returns>
+        /// <returns></returns>
         private static async Task<IResult> GetById(Guid Id, AppDbContext db, ClaimsPrincipal user)
         {
             var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -126,7 +139,7 @@ namespace JobTracker.Api.Endpoints
         /// <param name="request">The request containing the job application details.</param>
         /// <param name="db">The database context.</param>
         /// <param name="user">The authenticated user.</param>
-        /// <returns>The result of the operation.</returns>
+        /// <returns></returns>
         private static async Task<IResult> Create(
             CreateJobApplicationRequest request,
             AppDbContext db,
@@ -177,7 +190,7 @@ namespace JobTracker.Api.Endpoints
         /// <param name="request">The request containing the updated job application details.</param>
         /// <param name="db">The database context.</param>
         /// <param name="user">The authenticated user.</param>
-        /// <returns>The result of the operation.</returns>
+        /// <returns></returns>
         private static async Task<IResult> Update(Guid Id, UpdateJobApplicationRequest request, AppDbContext db, ClaimsPrincipal user)
         {
             var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -191,6 +204,9 @@ namespace JobTracker.Api.Endpoints
             if (application.UserId != Guid.Parse(userId))
                 return Results.Forbid(); // Maybe should also return NotFound to avoid leaking information about the existence of the application
 
+            // Capture old status before overwriting it
+            var oldStatus = application.Status;
+
             application.CompanyName = request.CompanyName;
             application.Position = request.Position;
             application.Location = request.Location;
@@ -200,6 +216,20 @@ namespace JobTracker.Api.Endpoints
             application.Notes = request.Notes;
             application.Source = request.Source;
             application.UpdatedAt = DateTime.UtcNow;
+
+            // If status changed, log it automatically
+            if (oldStatus != request.Status)
+            {
+                var statusChange = new ApplicationStatusChange
+                {
+                    Id = Guid.NewGuid(),
+                    JobApplicationId = application.Id,
+                    OldStatus = oldStatus,
+                    NewStatus = request.Status,
+                    ChangedAt = DateTime.UtcNow
+                };
+                db.ApplicationStatusChanges.Add(statusChange);
+            }
 
             await db.SaveChangesAsync();
 
@@ -244,6 +274,85 @@ namespace JobTracker.Api.Endpoints
             await db.SaveChangesAsync();
 
             return Results.NoContent();
+        }
+
+        /// <summary>
+        /// Updates the status of an existing job application for the authenticated user and logs the change.
+        /// </summary>
+        /// <param name="id"> The ID of the job application to update.</param>
+        /// <param name="request"> The request containing the new status and optional note.</param>
+        /// <param name="db"> The database context.</param>
+        /// <param name="user"> The authenticated user.</param>
+        /// <returns></returns>
+        private static async Task<IResult> UpdateStatus(Guid id, UpdateStatusRequest request, AppDbContext db, ClaimsPrincipal user)
+        {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId is null)
+                return Results.Unauthorized();
+
+            var application = await db.JobApplications.FindAsync(id);
+            if (application is null)
+                return Results.NotFound();
+
+            if (application.UserId != Guid.Parse(userId))
+                return Results.Forbid();
+
+            // Don't log if status didn't actually change
+            if (application.Status == request.NewStatus)
+                return Results.Ok();
+
+            var statusChange = new ApplicationStatusChange
+            {
+                Id = Guid.NewGuid(),
+                JobApplicationId = application.Id,
+                OldStatus = application.Status,
+                NewStatus = request.NewStatus,
+                ChangedAt = DateTime.UtcNow,
+                Note = request.Note
+            };
+
+            application.Status = request.NewStatus;
+            application.UpdatedAt = DateTime.UtcNow;
+
+            db.ApplicationStatusChanges.Add(statusChange);
+            await db.SaveChangesAsync();
+
+            return Results.Ok();
+        }
+
+        /// <summary>
+        /// Gets the status change history for a specific job application for the authenticated user.
+        /// </summary>
+        /// <param name="id"> The ID of the job application.</param>
+        /// <param name="db"> The database context.</param>
+        /// <param name="user"> The authenticated user.</param>
+        /// <returns></returns>
+        private static async Task<IResult> GetStatusChanges(Guid id, AppDbContext db, ClaimsPrincipal user)
+        {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId is null)
+                return Results.Unauthorized();
+
+            var application = await db.JobApplications.FindAsync(id);
+            if (application is null)
+                return Results.NotFound();
+
+            if (application.UserId != Guid.Parse(userId))
+                return Results.Forbid();
+
+            var changes = await db.ApplicationStatusChanges
+                .Where(c => c.JobApplicationId == id)
+                .OrderByDescending(c => c.ChangedAt)
+                .Select(c => new StatusChangeResponse(
+                    c.Id,
+                    c.OldStatus,
+                    c.NewStatus,
+                    c.ChangedAt,
+                    c.Note
+                ))
+                .ToListAsync();
+
+            return Results.Ok(changes);
         }
     }
 }

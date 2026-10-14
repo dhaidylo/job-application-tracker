@@ -60,31 +60,45 @@ mat-header-cell {
 }
 
 .status-badge {
-display: inline-block;
-padding: 4px 10px;
-border-radius: 16px;
-font-size: 12px;
-font-weight: 500;
-line-height: 1.4;
-white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  .edit-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  &:hover .edit-icon {
+    opacity: 1;
+  }
 }
 
 .status-applied {
-background-color: #e3f2fd;
-color: #1565c0;
+  background-color: #e3f2fd;
+  color: #1565c0;
 }
 
 .status-interviewing {
-background-color: #fff3e0;
-color: #e65100;
+  background-color: #fff3e0;
+  color: #e65100;
 }
 
 .status-offered {
-background-color: #e8f5e9;
-color: #2e7d32;
+  background-color: #e8f5e9;
+  color: #2e7d32;
 }
 
 .status-rejected {
-background-color: #ffebee;
-color: #c62828;
+  background-color: #ffebee;
+  color: #c62828;
 }
