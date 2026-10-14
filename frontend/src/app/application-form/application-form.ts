@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -29,7 +30,6 @@ import { ApplicationSource, ApplicationStatus } from '../models';
   styleUrl: './application-form.scss'
 })
 export class ApplicationForm implements OnInit {
-  // Form fields
   companyName = '';
   position = '';
   location = '';
@@ -43,10 +43,8 @@ export class ApplicationForm implements OnInit {
   isSaving = signal(false);
   errorMessage = signal('');
 
-  // If editId is set, we're in edit mode; otherwise create mode
   editId: string | null = null;
 
-  // All possible statuses and sources for the dropdowns
   statuses: ApplicationStatus[] = [
     'Applied',
     'Interviewing',
@@ -70,12 +68,11 @@ export class ApplicationForm implements OnInit {
 
   constructor(
     private applicationsService: ApplicationsService,
-    private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private navigationLocation: Location
   ) {}
 
   ngOnInit() {
-    // Check if there's an id in the route — if so, load the existing application
     this.editId = this.route.snapshot.paramMap.get('id');
     if (this.editId) {
       this.loadApplication(this.editId);
@@ -124,7 +121,8 @@ export class ApplicationForm implements OnInit {
 
     request.subscribe({
       next: () => {
-        this.router.navigate(['/applications']);
+        // Go back to wherever the user came from — list or detail page
+        this.navigationLocation.back();
       },
       error: () => {
         this.errorMessage.set('Failed to save application.');
@@ -134,7 +132,8 @@ export class ApplicationForm implements OnInit {
   }
 
   onCancel() {
-    this.router.navigate(['/applications']);
+    // Go back to wherever the user came from
+    this.navigationLocation.back();
   }
 
   get pageTitle() {

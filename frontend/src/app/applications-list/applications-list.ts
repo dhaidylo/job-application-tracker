@@ -100,6 +100,10 @@ export class ApplicationsList implements OnInit {
     });
   }
 
+  onRowClick(app: JobApplication) {
+    this.router.navigate(['/applications', app.id]);
+  }
+
   onAdd() {
     this.router.navigate(['/applications/new']);
   }

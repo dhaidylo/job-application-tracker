@@ -1,0 +1,175 @@
+.detail-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 500;
+    }
+
+    .company {
+      margin: 0;
+      color: #666;
+      font-size: 16px;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 8px 0;
+
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #1565c0;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      .link-icon {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+      }
+    }
+
+    .notes {
+      margin: 0;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+  }
+}
+
+.history-section {
+  h2 {
+    margin: 0 0 16px;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .no-history {
+    color: #888;
+  }
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+
+  .timeline-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #1565c0;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  .timeline-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .timeline-statuses {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .arrow-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        color: #888;
+      }
+    }
+
+    .timeline-date {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .timeline-note {
+      margin: 0;
+      font-size: 13px;
+      color: #555;
+      font-style: italic;
+    }
+  }
+}
+
+// Status badge styles (same as list)
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status-applied { background-color: #e3f2fd; color: #1565c0; }
+.status-interviewing { background-color: #fff3e0; color: #e65100; }
+.status-offered { background-color: #e8f5e9; color: #2e7d32; }
+.status-rejected { background-color: #ffebee; color: #c62828; }
+
+.center {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+}
+
+.error-message {
+  color: #f44336;
+}

@@ -1,0 +1,116 @@
+<div class="detail-container">
+
+  @if (isLoading()) {
+    <div class="center">
+      <mat-spinner />
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <p class="error-message">{{ errorMessage() }}</p>
+  }
+
+  @if (application(); as app) {
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <button mat-icon-button (click)="onBack()" matTooltip="Back to list">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div>
+          <h1>{{ app.position }}</h1>
+          <p class="company">{{ app.companyName }}</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button mat-stroked-button (click)="onEdit()">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+        <button mat-stroked-button color="warn" (click)="onDelete()">
+          <mat-icon>delete</mat-icon>
+          Delete
+        </button>
+      </div>
+    </div>
+
+    <mat-divider />
+
+    <!-- Details -->
+    <div class="details-grid">
+      <div class="detail-item">
+        <span class="label">Status</span>
+        <span class="status-badge" [class]="getStatusClass(app.status)">
+          {{ app.status }}
+        </span>
+      </div>
+
+      <div class="detail-item">
+        <span class="label">Source</span>
+        <span>{{ app.source }}</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="label">Location</span>
+        <span>{{ app.location || '—' }}</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="label">Applied</span>
+        <span>{{ app.appliedDate | date:'mediumDate' }}</span>
+      </div>
+
+      @if (app.jobPostingUrl) {
+        <div class="detail-item">
+          <span class="label">Job Posting</span>
+          <a [href]="app.jobPostingUrl" target="_blank" rel="noopener">
+            View posting
+            <mat-icon class="link-icon">open_in_new</mat-icon>
+          </a>
+        </div>
+      }
+
+      @if (app.notes) {
+        <div class="detail-item full-width">
+          <span class="label">Notes</span>
+          <p class="notes">{{ app.notes }}</p>
+        </div>
+      }
+    </div>
+
+    <mat-divider />
+
+    <!-- Status History -->
+    <div class="history-section">
+      <h2>Status History</h2>
+
+      @if (statusChanges().length === 0) {
+        <p class="no-history">No status changes recorded yet.</p>
+      } @else {
+        <div class="timeline">
+          @for (change of statusChanges(); track change.id) {
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <div class="timeline-statuses">
+                  <span class="status-badge" [class]="getStatusClass(change.newStatus)">
+                    {{ change.newStatus }}
+                  </span>
+                  <mat-icon class="arrow-icon">arrow_back</mat-icon>
+                  <span class="status-badge" [class]="getStatusClass(change.oldStatus)">
+                    {{ change.oldStatus }}
+                  </span>
+                </div>
+                <span class="timeline-date">{{ change.changedAt | date:'mediumDate' }}</span>
+                @if (change.note) {
+                  <p class="timeline-note">{{ change.note }}</p>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+</div>

@@ -54,7 +54,12 @@
       <ng-container matColumnDef="status">
         <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
         <mat-cell *matCellDef="let app">
-          <span class="status-badge" [class]="getStatusClass(app.status)" (click)="onStatusClick(app)" matTooltip="Click to change status">
+          <span 
+            class="status-badge"
+            [class]="getStatusClass(app.status)"
+            (click)="onStatusClick(app); $event.stopPropagation()"
+            matTooltip="Click to change status"
+          >
             {{ app.status }}
             <mat-icon class="edit-icon">edit</mat-icon>
           </span>
@@ -76,7 +81,7 @@
       <ng-container matColumnDef="actions">
         <mat-header-cell *matHeaderCellDef></mat-header-cell>
         <mat-cell *matCellDef="let app">
-          <button mat-icon-button [matMenuTriggerFor]="menu">
+          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
@@ -93,7 +98,11 @@
       </ng-container>
 
       <mat-header-row *matHeaderRowDef="displayedColumns" />
-      <mat-row *matRowDef="let row; columns: displayedColumns;" />
+      <mat-row 
+        *matRowDef="let row; columns: displayedColumns;" 
+        (click)="onRowClick(row)"
+        class="clickable-row"
+      />
 
     </mat-table>
   }

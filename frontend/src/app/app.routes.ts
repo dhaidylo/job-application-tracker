@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { Login } from './login/login';
 import { Register } from './register/register';
 import { ApplicationsList } from './applications-list/applications-list';
+import { ApplicationDetail } from './application-detail/application-detail';
 import { ApplicationForm } from './application-form/application-form';
 import { authGuard } from './auth-guard';
 
@@ -10,6 +11,7 @@ export const routes: Routes = [
   { path: 'register', component: Register },
   { path: 'applications', component: ApplicationsList, canActivate: [authGuard] },
   { path: 'applications/new', component: ApplicationForm, canActivate: [authGuard] },
+  { path: 'applications/:id', component: ApplicationDetail, canActivate: [authGuard] },
   { path: 'applications/:id/edit', component: ApplicationForm, canActivate: [authGuard] },
   { path: '', redirectTo: 'login', pathMatch: 'full' }
 ];
