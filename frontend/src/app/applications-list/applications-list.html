@@ -39,7 +39,17 @@
 
   <!-- Table -->
   @if (!isLoading() && applications().length > 0) {
-    <mat-table [dataSource]="applications()">
+    
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search</mat-label>
+      <input
+        matInput
+        (input)="onSearch($any($event.target).value)"
+        placeholder="Search..."
+      />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    <mat-table [dataSource]="filteredApplications()">
 
       <ng-container matColumnDef="companyName">
         <mat-header-cell *matHeaderCellDef>Company</mat-header-cell>

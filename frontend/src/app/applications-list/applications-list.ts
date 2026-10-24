@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,6 +7,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatDialog } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
 import { ApplicationsService } from '../applications.service';
@@ -24,7 +26,9 @@ import { StatusChangeDialog } from '../status-change-dialog/status-change-dialog
     MatProgressSpinnerModule,
     MatMenuModule,
     MatTooltipModule,
-    DatePipe
+    DatePipe,
+    MatFormFieldModule,
+    MatInputModule
   ],
   templateUrl: './applications-list.html',
   styleUrl: './applications-list.scss'
@@ -33,6 +37,19 @@ export class ApplicationsList implements OnInit {
   applications = signal<JobApplication[]>([]);
   isLoading = signal(true);
   errorMessage = signal<string | null>(null);
+  searchQuery = signal('');
+
+  // Derived signal — automatically filters whenever applications or searchQuery changes
+  filteredApplications = computed(() => {
+    const query = this.searchQuery().toLowerCase().trim();
+    if (!query) return this.applications();
+
+    return this.applications().filter(app =>
+      app.companyName.toLowerCase().includes(query) ||
+      app.position.toLowerCase().includes(query) ||
+      app.location.toLowerCase().includes(query)
+    );
+  });
 
   // Columns to display in the table
   displayedColumns = ['companyName', 'position', 'status', 'source', 'appliedDate', 'actions'];
@@ -129,5 +146,9 @@ export class ApplicationsList implements OnInit {
 
   onLogout() {
     this.authService.logout();
+  }
+
+  onSearch(query: string) {
+    this.searchQuery.set(query);
   }
 }
