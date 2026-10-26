@@ -14,6 +14,49 @@
     </div>
   </div>
 
+  <!-- Filters -->
+  <div class="filters">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search</mat-label>
+      <input
+        matInput
+        (input)="onSearch($any($event.target).value)"
+        placeholder="Search..."
+      />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Status</mat-label>
+      <mat-select
+        [value]="selectedStatus()"
+        (selectionChange)="onStatusFilter($event.value)"
+      >
+        @for (s of statuses; track s) {
+          <mat-option [value]="s">{{ s }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Source</mat-label>
+      <mat-select
+        [value]="selectedSource()"
+        (selectionChange)="onSourceFilter($event.value)">
+        @for (s of sources; track s) {
+          <mat-option [value]="s">{{ s }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (hasActiveFilters()) {
+      <button mat-stroked-button (click)="onClearFilters()">
+        <mat-icon>clear</mat-icon>
+        Clear filters
+      </button>
+    }
+  </div>
+
   <!-- Loading state -->
   @if (isLoading()) {
     <div class="center">
@@ -37,22 +80,26 @@
     </div>
   }
 
+  <!-- No results from filter -->
+  @if (!isLoading() && filteredApplications().length === 0 && hasActiveFilters()) {
+    <div class="empty-state">
+      <mat-icon>search_off</mat-icon>
+      <p>No applications match your filters.</p>
+      <button mat-stroked-button (click)="onClearFilters()">Clear filters</button>
+    </div>
+  }
+
   <!-- Table -->
-  @if (!isLoading() && applications().length > 0) {
-    
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Search</mat-label>
-      <input
-        matInput
-        (input)="onSearch($any($event.target).value)"
-        placeholder="Search..."
-      />
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
+  @if (!isLoading() && filteredApplications().length > 0) {
     <mat-table [dataSource]="filteredApplications()">
 
       <ng-container matColumnDef="companyName">
-        <mat-header-cell *matHeaderCellDef>Company</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef>
+          <button mat-button (click)="onSort('companyName')">
+            Company
+            <mat-icon>{{ getSortIcon('companyName') }}</mat-icon>
+          </button>
+        </mat-header-cell>
         <mat-cell *matCellDef="let app">{{ app.companyName }}</mat-cell>
       </ng-container>
 
@@ -82,7 +129,12 @@
       </ng-container>
 
       <ng-container matColumnDef="appliedDate">
-        <mat-header-cell *matHeaderCellDef>Applied</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef>
+          <button mat-button (click)="onSort('appliedDate')">
+            Applied
+            <mat-icon>{{ getSortIcon('appliedDate') }}</mat-icon>
+          </button>
+        </mat-header-cell>
         <mat-cell *matCellDef="let app">
           {{ app.appliedDate | date:'mediumDate' }}
         </mat-cell>

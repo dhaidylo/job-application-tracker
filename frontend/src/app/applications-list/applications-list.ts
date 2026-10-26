@@ -1,4 +1,5 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,16 +10,24 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatSelectModule } from '@angular/material/select';
 import { DatePipe } from '@angular/common';
 import { ApplicationsService } from '../applications.service';
 import { AuthService } from '../auth.service';
-import { JobApplication, ApplicationStatus, UpdateStatusRequest } from '../models';
+import { JobApplication, ApplicationStatus, ApplicationSource, UpdateStatusRequest, APPLICATION_SOURCES, APPLICATION_STATUSES } from '../models';
 import { StatusChangeDialog } from '../status-change-dialog/status-change-dialog';
+
+
+type SortField = 'appliedDate' | 'companyName';
+type SortDirection = 'asc' | 'desc';
+type StatusFilter = ApplicationStatus | 'All';
+type SourceFilter = ApplicationSource | 'All';
 
 @Component({
   selector: 'app-applications-list',
   imports: [
+    FormsModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -26,9 +35,11 @@ import { StatusChangeDialog } from '../status-change-dialog/status-change-dialog
     MatProgressSpinnerModule,
     MatMenuModule,
     MatTooltipModule,
+    MatDialogModule,
     DatePipe,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatSelectModule
   ],
   templateUrl: './applications-list.html',
   styleUrl: './applications-list.scss'
@@ -37,18 +48,62 @@ export class ApplicationsList implements OnInit {
   applications = signal<JobApplication[]>([]);
   isLoading = signal(true);
   errorMessage = signal<string | null>(null);
+
+  // Filter signals
   searchQuery = signal('');
+  selectedStatus = signal<StatusFilter>('All');
+  selectedSource = signal<SourceFilter>('All');
+
+  // Sort signals
+  sortField = signal<SortField>('appliedDate');
+  sortDirection = signal<SortDirection>('desc');
+
+  statuses: StatusFilter[] = ['All', ...APPLICATION_STATUSES];
+  sources: SourceFilter[] = ['All',...APPLICATION_SOURCES];
 
   // Derived signal — automatically filters whenever applications or searchQuery changes
   filteredApplications = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
-    if (!query) return this.applications();
+    const status = this.selectedStatus();
+    const source = this.selectedSource();
+    const field = this.sortField();
+    const direction = this.sortDirection();
 
-    return this.applications().filter(app =>
-      app.companyName.toLowerCase().includes(query) ||
-      app.position.toLowerCase().includes(query) ||
-      app.location.toLowerCase().includes(query)
-    );
+    let result = this.applications();
+
+    // Filter by search query
+    if (query) {
+      result = result.filter(app =>
+        app.companyName.toLowerCase().includes(query) ||
+        app.position.toLowerCase().includes(query) ||
+        app.location.toLowerCase().includes(query)
+      );
+    }
+
+    // Filter by status
+    if (status !== 'All') {
+      result = result.filter(app => app.status === status);
+    }
+
+    // Filter by source
+    if (source !== 'All') {
+      result = result.filter(app => app.source === source);
+    }
+
+    // Sort
+    result = [...result].sort((a, b) => {
+      let comparison = 0;
+
+      if (field === 'appliedDate') {
+        comparison = new Date(a.appliedDate).getTime() - new Date(b.appliedDate).getTime();
+      } else if (field === 'companyName') {
+        comparison = a.companyName.localeCompare(b.companyName);
+      }
+
+      return direction === 'asc' ? comparison : -comparison;
+    });
+
+    return result;
   });
 
   // Columns to display in the table
@@ -78,6 +133,44 @@ export class ApplicationsList implements OnInit {
         this.isLoading.set(false);
       }
     });
+  }
+
+  onSearch(query: string) {
+    this.searchQuery.set(query);
+  }
+
+  onStatusFilter(status: StatusFilter) {
+    this.selectedStatus.set(status);
+  }
+
+  onSourceFilter(source: SourceFilter) {
+    this.selectedSource.set(source);
+  }
+
+  onSort(field: SortField) {
+    if (this.sortField() === field) {
+      // Toggle direction if same field clicked
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortField.set(field);
+      this.sortDirection.set('desc');
+    }
+  }
+
+  onClearFilters() {
+    this.searchQuery.set('');
+    this.selectedStatus.set('All');
+    this.selectedSource.set('All');
+  }
+
+  // Returns true if any filter is active
+  hasActiveFilters = computed(() => {
+    return this.searchQuery().trim() !== '' || this.selectedStatus() !== 'All' || this.selectedSource() !== 'All';
+  });
+
+  getSortIcon(field: SortField): string {
+    if (this.sortField() !== field) return 'unfold_more';
+    return this.sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward';
   }
 
   // Map of status to CSS class for styling
@@ -146,9 +239,5 @@ export class ApplicationsList implements OnInit {
 
   onLogout() {
     this.authService.logout();
-  }
-
-  onSearch(query: string) {
-    this.searchQuery.set(query);
   }
 }

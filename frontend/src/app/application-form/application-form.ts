@@ -11,7 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { ApplicationsService } from '../applications.service';
-import { ApplicationSource, ApplicationStatus } from '../models';
+import { ApplicationSource, ApplicationStatus, APPLICATION_STATUSES, APPLICATION_SOURCES } from '../models';
 
 @Component({
   selector: 'app-application-form',
@@ -45,26 +45,9 @@ export class ApplicationForm implements OnInit {
 
   editId: string | null = null;
 
-  statuses: ApplicationStatus[] = [
-    'Applied',
-    'Interviewing',
-    'Offered',
-    'Rejected'
-  ];
+  statuses: ApplicationStatus[] = APPLICATION_STATUSES;
 
-  sources: ApplicationSource[] = [
-    'Unknown',
-    'Arbeitsagentur',
-    'LinkedIn',
-    'Indeed',
-    'Xing',
-    'Stepstone',
-    'Referral',
-    'Recruiter',
-    'CompanyWebsite',
-    'CarreerFair',
-    'Other',
-  ];
+  sources: ApplicationSource[] = APPLICATION_SOURCES;
 
   constructor(
     private applicationsService: ApplicationsService,

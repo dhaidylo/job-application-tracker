@@ -35,6 +35,13 @@ export type ApplicationStatus =
 | 'Offered'
 | 'Rejected';
 
+export const APPLICATION_STATUSES: ApplicationStatus[] = [
+    'Applied',
+    'Interviewing',
+    'Offered',
+    'Rejected'
+];
+
 export type ApplicationSource =
 | 'Unknown'
 | 'Arbeitsagentur'
@@ -47,6 +54,20 @@ export type ApplicationSource =
 | 'CompanyWebsite'
 | 'CarreerFair'
 | 'Other';
+
+export const APPLICATION_SOURCES: ApplicationSource[] = [
+    'Unknown',
+    'Arbeitsagentur',
+    'LinkedIn',
+    'Indeed',
+    'Xing',
+    'Stepstone',
+    'Referral',
+    'Recruiter',
+    'CompanyWebsite',
+    'CarreerFair',
+    'Other'
+];
 
 export interface JobApplicationsResponse {
     jobApplications: JobApplication[];

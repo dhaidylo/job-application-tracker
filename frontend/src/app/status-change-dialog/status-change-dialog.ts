@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { ApplicationStatus } from '../models';
+import { ApplicationStatus, APPLICATION_STATUSES } from '../models';
 
 export interface StatusDialogData {
   currentStatus: ApplicationStatus;
@@ -28,12 +28,7 @@ export class StatusChangeDialog {
   newStatus: ApplicationStatus;
   note = '';
 
-  statuses: ApplicationStatus[] = [
-    'Applied',
-    'Interviewing',
-    'Offered',
-    'Rejected',
-  ];
+  statuses: ApplicationStatus[] = APPLICATION_STATUSES;
 
   constructor(
     private dialogRef: MatDialogRef<StatusChangeDialog>,
