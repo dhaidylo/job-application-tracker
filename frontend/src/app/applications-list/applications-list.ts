@@ -236,8 +236,4 @@ export class ApplicationsList implements OnInit {
       }
     });
   }
-
-  onLogout() {
-    this.authService.logout();
-  }
 }

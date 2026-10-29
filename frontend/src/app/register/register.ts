@@ -41,7 +41,7 @@ export class Register {
       password: this.password
     }).subscribe({
       next: () => {
-        this.router.navigate(['/applications']);
+        this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         this.isLoading = false;
