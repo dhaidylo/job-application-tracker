@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { JobApplication, JobApplicationsResponse, UpdateStatusRequest, StatusChange } from './models';
+import { JobApplication, JobApplicationsResponse, UpdateStatusRequest, StatusChange, DashboardStats } from './models';
 import { environment } from '../environments/environment';
 
 @Injectable({
@@ -37,5 +37,9 @@ export class ApplicationsService {
 
   getStatusChanges(id: string) {
     return this.http.get<StatusChange[]>(`${this.apiUrl}/${id}/status-changes`);
+  }
+
+  getStats() {
+    return this.http.get<DashboardStats>(`${this.apiUrl}/stats`);
   }
 }

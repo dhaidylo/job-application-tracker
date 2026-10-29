@@ -86,3 +86,10 @@ export interface UpdateStatusRequest {
   newStatus: ApplicationStatus;
   note?: string;
 }
+
+export interface DashboardStats {
+    totalApplications: number;
+    activeApplications: number;
+    byStatus: Record<ApplicationStatus, number>;
+    byMonth: Record<string, number>;
+}

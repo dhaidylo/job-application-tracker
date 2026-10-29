@@ -1,1 +1,79 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <h1>Dashboard</h1>
+
+  @if (isLoading()) {
+    <div class="center">
+      <mat-spinner />
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <p class="error-message">{{ errorMessage() }}</p>
+  }
+
+  @if (stats(); as s) {
+
+    <!-- Stat cards -->
+    <div class="stat-cards">
+      <div class="stat-card">
+        <mat-icon>work</mat-icon>
+        <div class="stat-value">{{ s.totalApplications }}</div>
+        <div class="stat-label">Total Applications</div>
+      </div>
+
+      <div class="stat-card">
+        <mat-icon>trending_up</mat-icon>
+        <div class="stat-value">{{ s.activeApplications }}</div>
+        <div class="stat-label">Active Applications</div>
+      </div>
+
+      <div class="stat-card">
+        <mat-icon>percent</mat-icon>
+        <div class="stat-value">{{ responseRate }}%</div>
+        <div class="stat-label">Response Rate</div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts">
+      <div class="chart-card">
+        <h2>By Status</h2>
+        @if (s.totalApplications > 0) {
+          <canvas baseChart
+            [data]="statusChartData()"
+            type="doughnut"
+            [options]="statusChartOptions">
+          </canvas>
+        } @else {
+          <p class="no-data">No data yet</p>
+        }
+      </div>
+
+      <div class="chart-card">
+        <h2>Applications by Month</h2>
+        @if (s.totalApplications > 0) {
+          <canvas baseChart
+            [data]="monthlyChartData()"
+            type="bar"
+            [options]="monthlyChartOptions">
+          </canvas>
+        } @else {
+          <p class="no-data">No data yet</p>
+        }
+      </div>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="quick-actions">
+      <a mat-flat-button routerLink="/applications/new">
+        <mat-icon>add</mat-icon>
+        Add Application
+      </a>
+      <a mat-stroked-button routerLink="/applications">
+        <mat-icon>list</mat-icon>
+        View All Applications
+      </a>
+    </div>
+
+  }
+</div>

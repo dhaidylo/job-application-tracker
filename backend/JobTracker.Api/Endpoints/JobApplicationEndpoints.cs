@@ -1,5 +1,6 @@
 ﻿using JobTracker.Api.Data;
 using JobTracker.Api.Models;
+using JobTracker.Api.Models.DTOs.Dashboard;
 using JobTracker.Api.Models.DTOs.JobApplication;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -60,6 +61,11 @@ namespace JobTracker.Api.Endpoints
                 .Produces(StatusCodes.Status401Unauthorized)
                 .Produces(StatusCodes.Status403Forbidden)
                 .Produces(StatusCodes.Status404NotFound);
+
+            group.MapGet("/stats", GetStats)
+                .RequireAuthorization()
+                .Produces<DashboardStatsResponse>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status401Unauthorized);
         }
 
         /// <summary>
@@ -353,6 +359,48 @@ namespace JobTracker.Api.Endpoints
                 .ToListAsync();
 
             return Results.Ok(changes);
+        }
+
+        /// <summary>
+        /// Gets the dashboard statistics for the authenticated user.
+        /// </summary>
+        /// <param name="db"> The database context.</param>
+        /// <param name="user"> The authenticated user.</param>
+        /// <returns></returns>
+        private static async Task<IResult> GetStats(AppDbContext db, ClaimsPrincipal user)
+        {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId is null)
+                return Results.Unauthorized();
+
+            var applications = await db.JobApplications
+                .Where(a => a.UserId == Guid.Parse(userId))
+                .ToListAsync();
+
+            // Count by status
+            var byStatus = applications
+                .GroupBy(a => a.Status.ToString())
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            // Count by month (formatted as "MMM yyyy")
+            var byMonth = applications
+                .GroupBy(a => a.AppliedDate.ToString("MMM yyyy"))
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            var activeStatuses = new[] {
+                ApplicationStatus.Applied,
+                ApplicationStatus.Interviewing,
+                ApplicationStatus.Offered
+            };
+
+            var activeCount = applications.Count(a => activeStatuses.Contains(a.Status));
+
+            return Results.Ok(new DashboardStatsResponse(
+                TotalApplications: applications.Count,
+                ActiveApplications: activeCount,
+                ByStatus: byStatus,
+                ByMonth: byMonth
+            ));
         }
     }
 }
