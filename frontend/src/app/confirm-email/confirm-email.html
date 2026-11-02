@@ -1,0 +1,22 @@
+<div class="confirm-container">
+  <mat-card>
+    <mat-card-content>
+      @switch (state()) {
+        @case ('loading') {
+          <mat-spinner diameter="40" />
+          <p>Confirming your email...</p>
+        }
+        @case ('success') {
+          <h2>Email confirmed</h2>
+          <p>Your account is ready.</p>
+          <a mat-flat-button routerLink="/login">Sign in</a>
+        }
+        @case ('error') {
+          <h2>Link invalid or expired</h2>
+          <p>Try signing in. You can request a new confirmation email from there.</p>
+          <a mat-stroked-button routerLink="/login">Go to sign in</a>
+        }
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

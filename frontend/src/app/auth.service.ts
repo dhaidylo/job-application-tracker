@@ -15,9 +15,15 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   register(request: RegisterRequest) {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, request).pipe(
-      tap(response => this.saveToken(response.token))
-    );
+    return this.http.post<{ message: string }>(`${this.apiUrl}/register`, request);
+  }
+
+  confirmEmail(email: string, token: string) {
+    return this.http.post(`${this.apiUrl}/confirm-email`, { email, token });
+  }
+
+  resendConfirmation(email: string) {
+    return this.http.post(`${this.apiUrl}/resend-confirmation`, { email });
   }
 
   login(request: LoginRequest) {

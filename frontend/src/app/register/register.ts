@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,13 +26,14 @@ export class Register {
   fullName = '';
   email = '';
   password = '';
-  isLoading = false;
+  isLoading = signal(false);
   errorMessage = '';
+  isRegistered = signal(false);
 
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.errorMessage = '';
 
     this.authService.register({
@@ -41,10 +42,11 @@ export class Register {
       password: this.password
     }).subscribe({
       next: () => {
-        this.router.navigate(['/dashboard']);
+        this.isLoading.set(false);
+        this.isRegistered.set(true);
       },
       error: (err) => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.errorMessage = err.status === 409
           ? 'An account with this email already exists.'
           : 'Something went wrong. Please try again.';

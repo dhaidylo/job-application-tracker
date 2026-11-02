@@ -28,6 +28,10 @@ services:
       Jwt__Issuer: "jobtracker-api"
       Jwt__Audience: "jobtracker-client"
       Jwt__ExpiryMinutes: "60"
+      Smtp__Host: mailpit
+      Smtp__Port: "1025"
+      Smtp__From: "JobTracker <noreply@jobtracker.local>"
+      App__FrontendUrl: "http://localhost:4200"
     ports:
       - "5223:8080"
     depends_on:
@@ -43,6 +47,13 @@ services:
       - "4200:80"
     depends_on:
       - api
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: jobtracker-mail
+    ports:
+      - "8025:8025"   # web inbox
+      - "1025:1025"   # SMTP
 
 volumes:
   postgres_data:

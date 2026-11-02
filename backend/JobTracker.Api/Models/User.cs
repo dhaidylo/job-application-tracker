@@ -26,6 +26,21 @@
         public required string PasswordHash { get; set; }
 
         /// <summary>
+        /// Whether the user's email address has been confirmed.
+        /// </summary>
+        public bool EmailConfirmed { get; set; } = false;
+
+        /// <summary>
+        /// The hash of the email confirmation token.
+        /// </summary>
+        public string? EmailConfirmationTokenHash { get; set; }
+
+        /// <summary>
+        /// The expiration timestamp for the email confirmation token.
+        /// </summary>
+        public DateTime? EmailConfirmationTokenExpiresAt { get; set; }
+
+        /// <summary>
         /// Timestamp of when the user account was created. Set automatically.
         /// </summary>
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

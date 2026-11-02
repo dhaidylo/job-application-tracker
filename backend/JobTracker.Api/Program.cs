@@ -32,6 +32,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 
 // Configure JSON serialization options to handle enum values as strings.
 builder.Services.ConfigureHttpJsonOptions(options =>

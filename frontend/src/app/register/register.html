@@ -5,66 +5,76 @@
       <mat-card-subtitle>Start tracking your job applications</mat-card-subtitle>
     </mat-card-header>
 
-    <mat-card-content>
-      <form (ngSubmit)="onSubmit()">
+    @if (isRegistered()) {
+      <mat-card-content>
+        <div class="success-box">
+          <h3>Check your inbox</h3>
+          <p>We sent a confirmation link to <strong>{{ email }}</strong>.</p>
+          <a routerLink="/login">Back to sign in</a>
+        </div>
+      </mat-card-content>
+    } @else {
+      <mat-card-content>
+        <form (ngSubmit)="onSubmit()">
 
-        <div class="name-row">
+          <div class="name-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Full name</mat-label>
+              <input
+                matInput
+                type="text"
+                [(ngModel)]="fullName"
+                name="fullName"
+                required
+                autocomplete="name"
+              />
+            </mat-form-field>
+          </div>
+
           <mat-form-field appearance="outline">
-            <mat-label>Full name</mat-label>
+            <mat-label>Email</mat-label>
             <input
               matInput
-              type="text"
-              [(ngModel)]="fullName"
-              name="fullName"
+              type="email"
+              [(ngModel)]="email"
+              name="email"
               required
-              autocomplete="name"
+              autocomplete="email"
             />
           </mat-form-field>
-        </div>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Email</mat-label>
-          <input
-            matInput
-            type="email"
-            [(ngModel)]="email"
-            name="email"
-            required
-            autocomplete="email"
-          />
-        </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Password</mat-label>
+            <input
+              matInput
+              type="password"
+              [(ngModel)]="password"
+              name="password"
+              required
+              autocomplete="new-password"
+            />
+          </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Password</mat-label>
-          <input
-            matInput
-            type="password"
-            [(ngModel)]="password"
-            name="password"
-            required
-            autocomplete="new-password"
-          />
-        </mat-form-field>
-
-        @if (errorMessage) {
-          <p class="error-message">{{ errorMessage }}</p>
-        }
-
-        <button
-          mat-raised-button
-          color="primary"
-          type="submit"
-          [disabled]="isLoading || !fullName || !email || !password"
-        >
-          @if (isLoading) {
-            <mat-spinner diameter="20" />
-          } @else {
-            Create account
+          @if (errorMessage) {
+            <p class="error-message">{{ errorMessage }}</p>
           }
-        </button>
 
-      </form>
-    </mat-card-content>
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="isLoading() || !fullName || !email || !password"
+          >
+            @if (isLoading()) {
+              <mat-spinner diameter="20" />
+            } @else {
+              Create account
+            }
+          </button>
+
+        </form>
+      </mat-card-content>
+    }
 
     <mat-card-actions>
       <p>Already have an account? <a routerLink="/login">Sign in</a></p>

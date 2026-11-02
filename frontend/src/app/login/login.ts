@@ -27,24 +27,39 @@ export class Login {
   password = '';
   isLoading = signal(false);
   errorMessage = signal('');
+  needsConfirmation = signal(false);
+  resendSent = signal(false);
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  onSubmit() {
-    this.isLoading.set(true);
-    this.errorMessage.set('');
+onSubmit() {
+  this.isLoading.set(true);
+  this.errorMessage.set('');
+  this.needsConfirmation.set(false);
+  this.resendSent.set(false);
 
-    this.authService.login({ email: this.email, password: this.password }).subscribe({
-      next: () => {
-        this.router.navigate(['/dashboard']);
-      },  
-      error: (err) => {
-        this.isLoading.set(false);
-        // Show a generic message — don't tell the user which field is wrong
-        this.errorMessage.set(err.status === 401
-          ? 'Invalid email or password.'
-          : 'Something went wrong. Please try again.');
+  this.authService.login({ email: this.email, password: this.password }).subscribe({
+    next: () => {
+      this.router.navigate(['/dashboard']);
+    },
+    error: (err) => {
+      this.isLoading.set(false);
+
+      if (err.status === 403) {
+        // The email isn't confirmed yet
+        this.needsConfirmation.set(true);
+        this.errorMessage.set('Please confirm your email before signing in.');
+      } else if (err.status === 401) {
+        // Generic message, don't reveal which field is wrong
+        this.errorMessage.set('Invalid email or password.');
+      } else {
+        this.errorMessage.set('Something went wrong. Please try again.');
       }
-    });
+    }
+  });
+}
+
+  onResend() {
+    this.authService.resendConfirmation(this.email).subscribe(() => this.resendSent.set(true));
   }
 }

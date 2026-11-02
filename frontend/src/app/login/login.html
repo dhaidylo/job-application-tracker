@@ -37,6 +37,14 @@
           <p class="error-message">{{ error }}</p>
         }
 
+        @if (needsConfirmation()) {
+          @if (resendSent()) {
+            <p>Confirmation email sent.</p>
+          } @else {
+            <button mat-button type="button" (click)="onResend()">Resend confirmation email</button>
+          }
+        }
+
         <button
           mat-raised-button
           color="primary"
