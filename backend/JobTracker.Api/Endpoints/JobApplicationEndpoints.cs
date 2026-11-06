@@ -146,10 +146,7 @@ namespace JobTracker.Api.Endpoints
         /// <param name="db">The database context.</param>
         /// <param name="user">The authenticated user.</param>
         /// <returns></returns>
-        private static async Task<IResult> Create(
-            CreateJobApplicationRequest request,
-            AppDbContext db,
-            ClaimsPrincipal user)
+        private static async Task<IResult> Create(CreateJobApplicationRequest request, AppDbContext db, ClaimsPrincipal user)
         {
             var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId is null)

@@ -1,0 +1,109 @@
+<div class="account-container">
+  <h1>Account</h1>
+
+  @if (isLoading()) {
+    <div class="center"><mat-spinner /></div>
+  } @else {
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Profile</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form (ngSubmit)="onSaveProfile()">
+          <mat-form-field appearance="outline">
+            <mat-label>Full name</mat-label>
+            <input matInput [(ngModel)]="fullName" name="fullName" required />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput [value]="email()" disabled />
+          </mat-form-field>
+
+          @if (profileError()) { <p class="error-message">{{ profileError() }}</p> }
+          @if (profileMessage()) { <p class="success-message">{{ profileMessage() }}</p> }
+
+          <div class="actions">
+            <button mat-flat-button type="submit" [disabled]="isSavingProfile() || !fullName.trim()">
+              Save
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Change password</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form (ngSubmit)="onChangePassword()">
+          <mat-form-field appearance="outline">
+            <mat-label>Current password</mat-label>
+            <input matInput type="password" [(ngModel)]="currentPassword" name="currentPassword"
+                   autocomplete="current-password" required />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>New password</mat-label>
+            <input matInput type="password" [(ngModel)]="newPassword" name="newPassword"
+                   autocomplete="new-password" required />
+            <mat-hint>At least 8 characters</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Confirm new password</mat-label>
+            <input matInput type="password" [(ngModel)]="confirmPassword" name="confirmPassword"
+                   autocomplete="new-password" required />
+          </mat-form-field>
+
+          @if (passwordError()) { <p class="error-message">{{ passwordError() }}</p> }
+          @if (passwordMessage()) { <p class="success-message">{{ passwordMessage() }}</p> }
+
+          <div class="actions">
+            <button mat-flat-button type="submit"
+                    [disabled]="isSavingPassword() || !currentPassword || !newPassword || !confirmPassword">
+              Change password
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Change email</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <form (ngSubmit)="onChangeEmail()">
+            @if (pendingEmail()) {
+                <p>Waiting for confirmation of <strong>{{ pendingEmail() }}</strong>. Check that inbox.</p>
+            }
+
+            <mat-form-field appearance="outline">
+                <mat-label>New email</mat-label>
+                <input matInput type="email" [(ngModel)]="newEmail" name="newEmail" required />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Current password</mat-label>
+                <input matInput type="password" [(ngModel)]="emailPassword" name="emailPassword"
+                    autocomplete="current-password" required />
+            </mat-form-field>
+
+            @if (emailError()) { <p class="error-message">{{ emailError() }}</p> }
+            @if (emailMessage()) { <p class="success-message">{{ emailMessage() }}</p> }
+
+            <div class="actions">
+                <button mat-flat-button type="submit"
+                        [disabled]="isSavingEmail() || !newEmail || !emailPassword">
+                Send confirmation
+                </button>
+            </div>
+            </form>
+        </mat-card-content>
+    </mat-card>
+
+  }
+</div>

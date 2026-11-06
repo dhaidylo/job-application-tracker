@@ -1,0 +1,46 @@
+.account-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+  }
+
+  mat-card {
+    padding: 16px;
+  }
+
+  mat-card-header {
+    margin-bottom: 16px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .error-message { color: #f44336; font-size: 14px; margin: 0; }
+  .success-message { color: #2e7d32; font-size: 14px; margin: 0; }
+
+  .center {
+    display: flex;
+    justify-content: center;
+    padding: 48px;
+  }
+}

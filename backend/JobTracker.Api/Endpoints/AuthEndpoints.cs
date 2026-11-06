@@ -164,7 +164,7 @@ namespace JobTracker.Api.Endpoints
 
         #region Helpers
 
-        private static string HashToken(string token) =>
+        internal static string HashToken(string token) =>
             Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
 
         /// <summary>

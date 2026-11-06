@@ -1,0 +1,12 @@
+.confirm-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+
+  mat-card {
+    max-width: 400px;
+    padding: 24px;
+    text-align: center;
+  }
+}

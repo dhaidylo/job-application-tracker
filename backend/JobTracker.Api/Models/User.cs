@@ -41,6 +41,11 @@
         public DateTime? EmailConfirmationTokenExpiresAt { get; set; }
 
         /// <summary>
+        /// New email wainting for the confirmation.
+        /// </summary>
+        public string? PendingEmail { get; set; }
+
+        /// <summary>
         /// Timestamp of when the user account was created. Set automatically.
         /// </summary>
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

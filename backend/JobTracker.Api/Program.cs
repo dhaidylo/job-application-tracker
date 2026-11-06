@@ -76,6 +76,7 @@ app.UseAuthorization();
 
 app.MapAuthEndpoints();
 app.MapJobApplicationEndpoints();
+app.MapAccountEndpoints();
 
 // Health check endpoint to verify the API is running. Will be removed in production.
 app.MapGet("/api/check", () => Results.Ok(new {status = "ok" }));

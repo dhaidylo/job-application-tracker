@@ -1,0 +1,27 @@
+<div class="confirm-container">
+  <mat-card>
+    <mat-card-content>
+      @switch (state()) {
+        @case ('loading') {
+          <mat-spinner diameter="40" />
+          <p>Confirming your email change...</p>
+        }
+        @case ('success') {
+          <h2>Email changed</h2>
+          @if (isLoggedIn()) {
+            <p>Your new email is now active.</p>
+            <a mat-flat-button routerLink="/account">Back to account</a>
+          } @else {
+            <p>Your new email is active. Use it the next time you sign in.</p>
+            <a mat-flat-button routerLink="/login">Sign in</a>
+          }
+        }
+        @case ('error') {
+          <h2>Link invalid or expired</h2>
+          <p>Request the email change again from your account page.</p>
+          <a mat-stroked-button routerLink="/account">Go to account</a>
+        }
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
